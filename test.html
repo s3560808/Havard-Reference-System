@@ -1,0 +1,168 @@
+<style>
+label {
+	width:100px;
+	display: inline-block;
+}
+
+input {
+	width:200px;
+	display: inline-block;
+}
+
+#inputArea{
+	margin-right: 50px;
+	background-color: yellow;
+	display: inline-block;
+	vertical-align:top;
+}
+.inputAreaInputRadio{
+	width:10px;
+	display: inline-block;
+}
+#citationResult{
+	background-color: green;
+	display: inline-block;
+	vertical-align:top;
+}
+</style>    
+
+<div>
+	> Reference from http://www.bibme.org/apa  
+	> Part Website
+
+	> http://www2.eit.ac.nz/library/ls_guides_apareferencingwebsite.html
+
+	> https://www.apastyle.org/learn/tutorials/brief-guide
+</div>
+<div id="citationGenerator">
+	<div id="inputArea">
+		<label for="lastName">Last Name</label>
+		<input type="input" id="lastName" v-model="lastName">*
+		<br>
+		<label for="middleName">Middle Name</label>
+		<input type="input" id="middleName" v-model="middleName"> 
+		<br>
+		<label for="firstName">First Name</label>
+		<input type="input" id = "firstName" v-model="firstName">*
+		<br>
+		
+		<label for="publishYear">Publish Year</label>
+		<input type="number" id = "publishYear" v-model="publishYear"> 
+		<br>
+		<label for="publishMonth">Publish Month</label>
+		<input type="number" id = "publishMonth" v-model="publishMonth"> 
+		<br>
+		<label for="publishDay">Publish Day</label>
+		<input type="number" id = "publishDay" v-model="publishDay"> 
+		<br>
+
+		<label for="publishTitle">Title</label>
+		<input type="input" id = "publishTitle" v-model="publishTitle">*
+		<br>
+		<label for="URL">URL</label>
+		<input type="input" id = "URL" v-model="URL">*
+		<br>
+		<label for="mode">Mode:</label> 
+		<input class = "inputAreaInputRadio" type="radio" name="mode" value="markdown" v-model="mode" checked="checked"> Markdown 
+		<input class = "inputAreaInputRadio" type="radio" name="mode" value="normal"   v-model="mode"> Normal
+		<br>
+		<button v-on:click="addNewCitation('hi')">Generate</button>
+	</div>
+
+	<div id="citationResult">
+		<div><input type="button" value="Copy All"></div>
+		<div id="citationList ">
+			<ul>
+				<li
+				is="todo-item"
+				v-for="(todo, index) in todos"
+				v-bind:key="todo.id"
+				v-bind:title="todo.title"
+				v-on:remove="todos.splice(index, 1)"
+				></li> 
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<script type="text/javascript">
+	Vue.component('todo-item', {
+		template: '\
+		<li>\
+		{{ title }}\
+		<button v-on:click="$emit(\'remove\')">Remove</button>\
+		</li>\
+		',
+		props: ['title']
+	})
+
+	new Vue({
+		el: '#citationGenerator',
+		data: {
+			todos: [
+			{
+				id: 1,
+				title: 'Do the dishes',
+			},
+			{
+				id: 2,
+				title: 'Take out the trash',
+			},
+			{
+				id: 3,
+				title: 'Mow the lawn'
+			}
+			],
+			nextTodoId: 4,
+			lastName: '',
+			middleName: '',
+			firstName: '',
+			// publisher: '',
+			publishYear: '',
+			publishMonth: '',
+			publishDay: '',
+			publishTitle: '',
+			URL: '',
+			mode: 'markdown',
+		},
+		methods: {
+			addNewCitation: function () {
+				var newCitation = "";
+				this.lastName = this.lastName.charAt(0).toUpperCase() + this.lastName.toLowerCase().slice(1);
+				this.firstName = this.firstName.charAt(0).toUpperCase();
+				this.middleName = this.middleName.charAt(0).toUpperCase();
+				if(this.mode == "normal"){
+					newCitation = this.lastName + ", " + 
+								this.firstName + ". " +
+								this.middleName + ". (" +
+								this.publishYear + ", " +
+								this.publishMonth + " " +
+								this.publishDay + "). " +
+								this.publishTitle + ". " +
+								"Retrieved from " +
+								this.URL + "  ";
+				}
+				if(this.mode == "markdown"){
+					newCitation = "> " +
+								this.lastName + ", " + 
+								this.firstName + ". " +
+								this.middleName + ". (" +
+								this.publishYear + ", " +
+								this.publishMonth + " " +
+								this.publishDay + "). " +
+								this.publishTitle + ". " +
+								"Retrieved from " + "[" +
+								this.URL + "]" +
+								"(" + this.URL + ")" + "  ";
+				}
+				this.todos.push({
+					id: this.nextTodoId++,
+					title: newCitation
+				})
+				this.lastName = '';
+			}
+		}
+	})
+</script>
